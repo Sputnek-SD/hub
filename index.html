@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<!--
+  Brad N Tiff Hub: the app shell
+  ------------------------------------------------------------------
+  The ONE line to change: paste the hub's Web app URL (the one that ends in /exec)
+  between the quotes on the HUB_URL line below. Nothing else needs editing.
+-->
+<script>
+  const HUB_URL = 'PASTE_YOUR_WEB_APP_URL_HERE';
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#F1F3F8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0A0F1C" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="B&amp;T Hub">
+<title>Brad N Tiff Hub</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preload" href="fonts/big-shoulders-900.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preconnect" href="https://script.google.com">
+<link rel="preconnect" href="https://script.googleusercontent.com">
+<style>
+@font-face{font-family:"Big Shoulders Display";font-weight:900;font-display:swap;src:url(fonts/big-shoulders-900.woff2) format("woff2")}
+@font-face{font-family:"Schibsted Grotesk";font-weight:500;font-display:swap;src:url(fonts/schibsted-500.woff2) format("woff2")}
+@font-face{font-family:"Schibsted Grotesk";font-weight:700;font-display:swap;src:url(fonts/schibsted-700.woff2) format("woff2")}
+
+:root{
+  --page:#F1F3F8;                 /* matches the hub's light background */
+  --sky-1:#120F3D; --sky-2:#2A1F7A; --sky-3:#5B3FD6; --sky-4:#8B5CF6;
+  --sun-1:#FFE08A; --sun-2:#FFB02E; --sun-3:#FF7A3D;
+  --sea-1:#1B6E9A; --sea-2:#124A78; --sea-3:#0A1F45;
+  --mint:#5EEAD4; --cyan:#22D3EE;
+  --ink:#FFFFFF; --ink-2:rgba(236,233,255,.82); --ink-3:rgba(222,216,255,.62);
+}
+:root:not([data-theme="light"]){color-scheme:light dark}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --page:#0A0F1C; } }
+:root[data-theme="dark"]{ --page:#0A0F1C; }
+
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--page);overflow:hidden;overscroll-behavior:none}
+body{font-family:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+
+/* The hub itself */
+#hub{position:fixed;inset:0;width:100%;height:100%;height:100dvh;border:0;display:block;background:var(--page);opacity:0;transition:opacity .45s ease}
+body.ready #hub{opacity:1}
+
+/* Splash */
+#splash{position:fixed;inset:0;z-index:2;overflow:hidden;color:var(--ink);
+  background:
+    radial-gradient(120% 70% at 50% 74%, rgba(255,181,71,.55) 0%, rgba(255,107,107,.22) 32%, rgba(255,107,107,0) 62%),
+    linear-gradient(172deg,var(--sky-1) 0%,var(--sky-2) 42%,var(--sky-3) 74%,var(--sky-4) 100%);
+  transition:opacity .55s ease .05s, visibility 0s linear .6s}
+body.ready #splash{opacity:0;visibility:hidden}
+
+.stars i{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;opacity:.55;animation:twinkle 3.6s ease-in-out infinite}
+.stars i:nth-child(2n){width:2px;height:2px;animation-duration:4.8s}
+.stars i:nth-child(3n){animation-delay:-1.7s}
+@keyframes twinkle{0%,100%{opacity:.2}50%{opacity:.85}}
+
+.scene{position:absolute;left:0;right:0;bottom:0;height:27%}
+.sun{position:absolute;left:50%;bottom:100%;width:min(46vw,260px,26vh);aspect-ratio:1;border-radius:50%;
+  background:linear-gradient(180deg,var(--sun-1),var(--sun-2) 55%,var(--sun-3));
+  transform:translate(-50%,62%);box-shadow:0 0 90px 30px rgba(255,170,70,.28);animation:rise 2.6s cubic-bezier(.2,.7,.2,1) both}
+@keyframes rise{from{transform:translate(-50%,100%)}to{transform:translate(-50%,52%)}}
+.sea{position:absolute;inset:0;background:linear-gradient(180deg,var(--sea-1),var(--sea-2) 35%,var(--sea-3));z-index:1}
+.sea::before{content:"";position:absolute;left:0;right:0;top:-2px;height:3px;background:#FFD9A0;opacity:.6}
+.glints{position:absolute;left:50%;top:14%;transform:translateX(-50%);display:grid;justify-items:center;gap:clamp(10px,2.4vh,18px);z-index:2}
+.glints b{display:block;height:6px;border-radius:6px;background:#FFD27A;animation:shimmer 2.8s ease-in-out infinite}
+.glints b:nth-child(1){width:min(32vw,180px)}
+.glints b:nth-child(2){width:min(21vw,118px);opacity:.85;background:#FFBE5C;animation-delay:-.6s}
+.glints b:nth-child(3){width:min(11vw,60px);opacity:.7;background:#FF9F45;animation-delay:-1.2s}
+@keyframes shimmer{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.82)}}
+
+.center{position:absolute;left:0;right:0;top:0;bottom:27%;display:grid;place-items:center;padding:24px 16px;z-index:3}
+.stack{display:grid;justify-items:center;text-align:center;gap:14px;max-width:520px;width:100%}
+.badge{width:88px;height:88px;border-radius:22px;box-shadow:0 18px 40px -12px rgba(8,6,40,.7),0 0 0 1px rgba(255,255,255,.12);animation:pop .7s cubic-bezier(.2,.9,.3,1.25) both}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+.eyebrow{font-weight:700;font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:var(--mint);margin-top:6px}
+.word{font-family:"Big Shoulders Display",Impact,"Arial Narrow",sans-serif;font-weight:900;line-height:.86;font-size:clamp(52px,15vw,96px);letter-spacing:.01em;text-transform:uppercase;margin:0;
+  text-shadow:0 10px 30px rgba(10,8,46,.55)}
+.word span{background:linear-gradient(135deg,#A7F3D0,var(--mint) 45%,#67E8F9);text-shadow:none;filter:drop-shadow(0 8px 22px rgba(10,8,46,.5));-webkit-background-clip:text;background-clip:text;color:transparent}
+.status{font-size:15px;color:var(--ink-2);min-height:1.4em;margin:2px 0 0}
+.bar{width:min(260px,70vw);height:6px;border-radius:99px;background:rgba(255,255,255,.2);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);overflow:hidden;margin-top:4px}
+.bar i{display:block;height:100%;width:38%;border-radius:inherit;background:linear-gradient(90deg,var(--mint),var(--cyan),#FFD27A);animation:slide 1.4s ease-in-out infinite}
+@keyframes slide{0%{transform:translateX(-110%)}100%{transform:translateX(290%)}}
+
+.help{display:none;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+body.slow .help, body.offline .help, body.setup .help{display:flex}
+body.offline .bar, body.setup .bar{display:none}
+.btn{appearance:none;border:0;cursor:pointer;font:700 15px/1 "Schibsted Grotesk",system-ui,sans-serif;padding:13px 18px;border-radius:12px;min-height:44px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:transform .15s ease, background .2s ease}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:#fff;color:#1E1460}
+.btn.ghost{background:rgba(255,255,255,.12);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.28)}
+.btn:focus-visible{outline:3px solid var(--mint);outline-offset:3px}
+.hint{font-size:13px;color:var(--ink-3);max-width:340px;margin:2px auto 0;line-height:1.45;display:none}
+body.slow .hint, body.offline .hint, body.setup .hint{display:block}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:rgba(255,255,255,.12);padding:2px 6px;border-radius:6px}
+
+@media (max-height:560px){ .badge{width:64px;height:64px;border-radius:16px} .word{font-size:clamp(40px,9vw,64px)} .scene{height:24%} .center{bottom:24%} }
+@media (prefers-reduced-motion: reduce){ *,*::before,*::after{animation:none!important;transition:none!important} .sun{transform:translate(-50%,52%)} }
+</style>
+</head>
+<body>
+<div id="splash" role="status" aria-live="polite">
+  <div class="stars" aria-hidden="true">
+    <i style="left:14%;top:12%"></i><i style="left:78%;top:9%"></i><i style="left:86%;top:24%"></i>
+    <i style="left:9%;top:31%"></i><i style="left:63%;top:6%"></i><i style="left:34%;top:18%"></i>
+    <i style="left:92%;top:42%"></i><i style="left:22%;top:46%"></i>
+  </div>
+  <div class="scene" aria-hidden="true">
+    <div class="sun"></div>
+    <div class="sea"><div class="glints"><b></b><b></b><b></b></div></div>
+  </div>
+  <div class="center">
+    <div class="stack">
+      <img class="badge" src="icons/icon-192.png" alt="" width="88" height="88">
+      <div class="eyebrow" id="greet">Good morning</div>
+      <h1 class="word">Brad N Tiff <span>Hub</span></h1>
+      <p class="status" id="status">Pulling in your briefings…</p>
+      <div class="bar" aria-hidden="true"><i></i></div>
+      <div class="help">
+        <button class="btn primary" id="retry" type="button">↻ Try again</button>
+        <a class="btn ghost" id="openHub" href="#" target="_blank" rel="noopener">Open in Chrome ↗</a>
+      </div>
+      <p class="hint" id="hint">Still blank after it loads? Tap <b>Open in Chrome</b>, make sure you’re signed in to Google, then come back.</p>
+    </div>
+  </div>
+</div>
+
+<iframe id="hub" title="Brad N Tiff Hub"
+  allow="clipboard-read; clipboard-write; fullscreen; geolocation; web-share"
+  referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+<script>
+(function () {
+  var body = document.body;
+  var frame = document.getElementById('hub');
+  var statusEl = document.getElementById('status');
+  var hint = document.getElementById('hint');
+  var url = String(HUB_URL || '').trim();
+  var configured = /^https:\/\/script\.google\.com\/.+\/exec(\?.*)?$/.test(url);
+  var slowTimer = null, started = 0;
+
+  // Greeting by the device's local time
+  var h = new Date().getHours();
+  document.getElementById('greet').textContent =
+    h < 5 ? 'Up late' : h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : h < 22 ? 'Good evening' : 'Good night';
+
+  if (!configured) {
+    body.classList.add('setup');
+    statusEl.textContent = 'Almost there: the hub link isn’t set yet.';
+    hint.innerHTML = 'In <code>index.html</code>, paste the Web app URL that ends in <code>/exec</code> into the <code>HUB_URL</code> line.';
+    document.getElementById('openHub').style.display = 'none';
+    document.getElementById('retry').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('openHub').href = url;
+
+  function load() {
+    body.classList.remove('slow', 'offline', 'ready');
+    if (!navigator.onLine) {
+      body.classList.add('offline');
+      statusEl.textContent = 'You’re offline. The hub will load when you’re back online.';
+      hint.textContent = 'Check Wi-Fi or mobile data, then tap Try again.';
+      return;
+    }
+    statusEl.textContent = 'Pulling in your briefings…';
+    started = Date.now();
+    clearTimeout(slowTimer);
+    slowTimer = setTimeout(function () {
+      body.classList.add('slow');
+      statusEl.textContent = 'Taking longer than usual…';
+      hint.innerHTML = 'Still loading? Tap <b>Try again</b>. If it stays blank, tap <b>Open in Chrome</b>, make sure you’re signed in to Google, then come back.';
+    }, 20000);
+    frame.src = url + (url.indexOf('?') > -1 ? '&' : '?') + 'app=1';
+  }
+
+  frame.addEventListener('load', function () {
+    if (!frame.getAttribute('src')) return;
+    clearTimeout(slowTimer);
+    // The outer Google page finishes first; give the dashboard a beat to paint before the curtain lifts.
+    var wait = Math.max(0, 900 - (Date.now() - started));
+    setTimeout(function () { body.classList.add('ready'); }, wait);
+  });
+
+  document.getElementById('retry').addEventListener('click', load);
+  window.addEventListener('online', function () { if (!body.classList.contains('ready')) load(); });
+
+  load();
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  }
+})();
+</script>
+</body>
+</html>
